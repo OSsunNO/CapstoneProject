@@ -235,16 +235,25 @@ def file_upload():
         # Sample API request body:
         '''
         {
-            "form": {
+            "file": {
                 "name": "demo.txt",
-                "uploadedDate": "2023-09-21",
-                "status": "uploaded",
-                "filteredDate": ""
+                "lastModified": 1615843200000,
+                "lastModifiedDate": "2021-03-16T00:00:00.000Z",
+                "type": "text/plain",
+                "size": 0
             }
         }
         '''
         
-        return "File Uploaded"
+        isFileExists = request.files['file'] != ""
+
+        # this is for checking if the file is uploaded
+        if isFileExists:
+            file = request.files['file']
+            app.logger.info(f"uploaded file name", file.filename)
+            
+            return "File Uploaded"
+
     else:
         return "Unexpected API request"
 

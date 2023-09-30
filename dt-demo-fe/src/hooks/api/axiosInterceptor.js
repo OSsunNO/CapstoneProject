@@ -8,6 +8,13 @@ const useApi = axios.create({
     },
 });
 
-useApi.interceptors.response.use((response) => response);
+const useApi_file = axios.create({
+    headers: {
+        "Content-Type": "multipart/form-data",
+    },
+});
 
-export default useApi;
+useApi.interceptors.response.use((response) => response);
+useApi_file.interceptors.response.use((response) => response);
+
+export { useApi as default, useApi_file };
