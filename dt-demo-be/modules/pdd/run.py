@@ -1,15 +1,16 @@
 import re
 import argparse
 import os
+from datetime import datetime
 
 pattern_dict = {
     "res_num_with_dash": {
-        "pattern": r"\b\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])-\d{7}\b",
+        "pattern": r"\b(\d{2})([0-1][0-9])([0-3][0-9])-([1-4])\d{6}\b",
         "type": "주민등록번호",
         "replacement": "******-*******"
     },
     "res_num_without_dash": {
-        "pattern": r"\b\d{13}\b",
+        "pattern": r"\b(\d{2})([0-1][0-9])([0-3][0-9])([1-4])\d{6}\b",
         "type": "주민등록번호",
         "replacement": "*************"
     },
@@ -37,8 +38,22 @@ pattern_dict = {
         "pattern": r'\b\d{10}\b',
         "type": "사업자 등록번호",
         "replacement": "**********"
+    },
+    "address": {
+    "pattern": r"((\b[가-힣]+구\b)[\s\w~\-.]*(\d{1,5}([~\-]\d{1,5})?))",
+    "type": "주소",
+    "replacement": lambda m: m.group(2) + ' ' + '*' * (len(m.group(3)) - m.group(3).count('-'))
+    }
+
 }
-}
+
+def is_valid_date(year, month, day):
+    try:
+        datetime(year, month, day)
+        return True
+    except ValueError:
+        return False
+    
 
 def run(fileName):
     print("---Personal data detection module processing---")
@@ -57,9 +72,19 @@ def run(fileName):
                 target=line.strip()
 
                 for pattern in pattern_dict:
-                    if re.search(pattern_dict[pattern]["pattern"], target):
+                   match = re.search(pattern_dict[pattern]["pattern"], target)  
+                   if match:
                         print(f'{pattern_dict[pattern]["type"]} detected on target sentence:')
                         print(f"{target}")
+                        # 주민등록번호 패턴이라면
+                        if "res_num" in pattern:
+                            year = 1900 + int(match.group(1)) if match.group(4) in ['1', '2'] else 2000 + int(match.group(1))
+                            month, day = int(match.group(2)), int(match.group(3))
+                        
+                            # 유효한 날짜인지 확인하고 아니면 continue
+                            if not is_valid_date(year, month, day): continue
+
+                        
                         target = re.sub(pattern_dict[pattern]["pattern"], pattern_dict[pattern]["replacement"], target)
 
                 nf.write(target+'\n')
