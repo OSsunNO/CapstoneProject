@@ -1,56 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { Button } from "antd";
-import useApi from "../../hooks/api/axiosInterceptor";
+import { useApi_file } from "../../hooks/api/axiosInterceptor";
 
 const UploadBtn = () => {
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [form, setForm] = useState({
-        name: "",
-        uploadedDate: "",
-        status: "",
-        filteredDate: "",
-    });
     const fileInputRef = useRef();
-    const date = new Date();
-    const uploadedDate = date.toISOString().slice(0, 10);
 
     const handleButtonClick = () => {
+        fileInputRef.current.value = null;
         fileInputRef.current.click();
     };
 
     const handleFileUpload = async (e) => {
         e.preventDefault();
-        setSelectedFile(e.target.files[0]);
+        const selectedFile = e.target.files[0];
 
-        if (selectedFile === null) {
+        if (!selectedFile) {
             console.log("file selection cancelled");
             return;
         }
 
-        var newFormState = {
-            ...form,
-            file: e.target.files[0],
-            name: e.target.files[0]["name"],
-            uploadedDate: uploadedDate,
-            status: "uploaded",
-        };
-
-        console.log("file information was transmitted to server");
+        const fileForm = new FormData();
+        fileForm.append("file", selectedFile);
 
         try {
-            await useApi.post("/filter/upload", {
-                form: newFormState,
-            });
+            await useApi_file.post("/filter/upload", fileForm);
+
+            // CHECK THE UPLOADED FILE
+            // console.log("sent data: ", fileForm.get("file"));
 
             alert("파일 업로드가 완료되었습니다.");
         } catch (err) {
             console.log(err);
         }
     };
-
-    useEffect(() => {
-        setSelectedFile((currentValue) => fileInputRef.current.files[0]);
-    }, [selectedFile]);
 
     return (
         <>

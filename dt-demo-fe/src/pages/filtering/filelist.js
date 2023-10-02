@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { List, Checkbox, Button } from "antd";
-import axios from "axios";
+import { List } from "antd";
 import UploadBtn from "../../components/file/uploadBtn";
 import useApi from "../../hooks/api/axiosInterceptor";
 
@@ -43,12 +42,6 @@ const BtnBar = styled.div`
 const FileListContainer = () => {
     const [isFileExist, setIsFileExist] = useState(false);
     const [fileList, setFileList] = useState([]);
-    const [form, setForm] = useState({
-        name: "",
-        uploadedDate: "",
-        status: "",
-        filteredDate: "",
-    });
 
     // TODO: Enable file selection
 
