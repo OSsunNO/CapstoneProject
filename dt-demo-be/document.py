@@ -63,6 +63,9 @@ class Document:
             return "FAIL"
         return "SUCCESS"
 
+    def getDname(self):
+        return self.__dname
+    
     # TODO: remove me
     def __setDname(self, dbconn):
         self.__app.logger.info("class Document - setDname(): "
