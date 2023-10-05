@@ -1,0 +1,56 @@
+@startuml
+Document "1" *-- "many" Sentence: contains
+
+class Document {
+- Flask app
+- int did
+- str dname
+- list active_module
+- dict module_count
+- str contents
+- list sentences
+
++ Document (app, did)
+
+- void setDname(dbconn)
+- void setActiveModule(dconn)
+- void setContents(dbconn)
+- void setSentences(dbconn)
+
++ void fetchDetReportInfo(dbconn)
++ dict getDetReportInfo()
+
+- void calculateOverviewRate()
+
++ void fetchConvReportInfo(dbconn)
++ dict getConvReportInfo()
+}
+
+class Sentence {
+- Flask app
+- int did
+- int sid
+- str original_content
+- dict error_info
+- str original_highlighted_content
+- str converted_content
+- str converted_highlighted_content
+- str convert_option
+
++ Sentence (app, did, sid, original_content)
+- boolean isClean()
++ void setErrorInfo(error_info)
++ void setConvertOption(option)
++ void highlightOriginalContent()
++ void setConvertedContent()
++ void highlightConvertedContent()
++ int getSid()
++ str getOriginalContent()
++ str getOriginalHighlightedContent()
++ list getDetectedErrorTypes()
++ tuple getErrorSizePerSentence()
++ str getConvertedContent()
++ str getConvertedHighlightedContent()
++ str getConvertOption()
+}
+@enduml
