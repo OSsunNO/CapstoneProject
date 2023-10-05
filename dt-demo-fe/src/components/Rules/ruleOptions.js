@@ -19,6 +19,12 @@ const rules = [
         value: "pdd",
         description: "pdd 모듈에 대한 설명입니다.",
     },
+
+    {
+        label: "특수문자 정제",
+        value: "spc",
+        description: "spc 모듈에 대한 설명입니다.",
+    },
 ];
 
 export default rules;

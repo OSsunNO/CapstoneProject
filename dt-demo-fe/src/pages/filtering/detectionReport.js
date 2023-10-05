@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import useApi from "../../hooks/api/axiosInterceptor";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import setDetReportData from "../../components/templates/report/generateReport";
+import DetectionReportTemplate from "../../components/templates/detectionReportTemplate";
 
 const Container = styled.div`
     display: flex;
@@ -56,10 +58,10 @@ const DetectionContainer = () => {
         }
 
         try {
-            await useApi.post("/filter/detection/type", {
-                type: radioSelected,
+            await useApi.post("/filter/filter/convreport", {
+                option: radioSelected,
             });
-            alert("검출이 완료되었습니다.");
+            alert("필터링이 완료되었습니다.");
             navigate("/filter/conversion");
         } catch (err) {
             console.log(err.response);
@@ -112,9 +114,20 @@ const DetectionContainer = () => {
         async function fetchData() {
             try {
                 const response = await useApi.get("/filter/detreport");
-                const html = response.data;
+                const { did, dname, active_module, module_count, contents, sentences } =
+                    response.data;
 
-                htmlStringToPdf(html, pdfRef);
+                const reportData = setDetReportData({
+                    did,
+                    dname,
+                    active_module,
+                    module_count,
+                    contents,
+                    sentences,
+                });
+                console.log(reportData);
+                const template = DetectionReportTemplate(reportData); // update html template, return html string
+                htmlStringToPdf(template, pdfRef);
             } catch (error) {
                 console.error("Error fetching data", error);
             }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Checkbox, Modal } from "antd";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import rules from "../../components/Rules/ruleOptions";
+import rules from "../../components/rules/ruleOptions";
 import useApi from "../../hooks/api/axiosInterceptor";
 
 const Container = styled.div`
@@ -75,9 +75,7 @@ const RulesContainer = () => {
         if (e.target.checked) {
             setCheckedValues([...checkedValues, e.target.value]);
         } else {
-            setCheckedValues(
-                checkedValues.filter((value) => value !== e.target.value)
-            );
+            setCheckedValues(checkedValues.filter((value) => value !== e.target.value));
         }
         setForm({ ...form, modules: checkedValues });
     };
@@ -93,13 +91,13 @@ const RulesContainer = () => {
     };
 
     const handleStartDetection = async (e) => {
-        e.preventDefault(); // prevent form submit from reloading the page
+        e.preventDefault();
 
         setForm({ ...form, modules: checkedValues.join() });
 
         var newFormState = {};
 
-        if (checkedValues.length === 4) {
+        if (checkedValues.length === 5) {
             newFormState = { ...form, all: true, modules: null };
         } else if (checkedValues.length === 0) {
             alert("필터링 규칙을 선택해주세요.");
@@ -108,15 +106,11 @@ const RulesContainer = () => {
             newFormState = { ...form, modules: checkedValues.join(",") };
         }
 
-        console.log("startDetection clicked");
-        console.log(newFormState);
-
         try {
-            await useApi.post("/filter", {
+            await useApi.post("/filter/modules", {
                 form: newFormState,
             });
-
-            alert("필터링이 완료되었습니다.");
+            alert("검출이 완료되었습니다.");
             navigate("/filter/detection");
         } catch (err) {
             console.log(err);

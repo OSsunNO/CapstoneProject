@@ -10,6 +10,11 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 did = 1
 test_doc = Document(app, did)
 
+# TODO: Design API for saving selected modules
+@app.route("/api/filter/modules", methods=["POST"])
+def post_selected_modules():
+    return "post_selected_modules"
+
 @app.route("/api/filter/detreport", methods=["GET"])
 def get_det_report():
     app.logger.info("API request to get detection report")
