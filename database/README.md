@@ -11,7 +11,7 @@ MariaDB [(none)]> SHOW DATABASES;
 MariaDB [(none)]> USE capstone;
 MariaDB [capstone]> CREATE TABLE doc (
   did INT PRIMARY KEY AUTO_INCREMENT,
-  dname TEXT,
+  dname TEXT UNIQUE,
   contents TEXT,
   typo BOOLEAN DEFAULT FALSE,
   slang BOOLEAN DEFAULT FALSE,
@@ -25,7 +25,7 @@ MariaDB [capstone]> DESC doc;
 -- | Field    | Type       | Null | Key | Default | Extra          |
 -- +----------+------------+------+-----+---------+----------------+
 -- | did      | int(11)    | NO   | PRI | NULL    | auto_increment |
--- | dname    | text       | YES  |     | NULL    |                |
+-- | dname    | text       | YES  | UNI | NULL    |                |
 -- | contents | text       | YES  |     | NULL    |                |
 -- | typo     | tinyint(1) | YES  |     | 0       |                |
 -- | slang    | tinyint(1) | YES  |     | 0       |                |
