@@ -3,16 +3,67 @@ import json
 modules = ["typo", "slang", "dup", "pdd", "spc"]
 
 class Document:
-    def __init__(self, app, did):
+    def __init__(self, app, did=None):
         self.__app = app                      # Flask app: used for logging
-        self.__did = did                      # Document id: must be given
+        self.__did = 0                        # Document id
         self.__dname = ""                     # Document name
         self.__active_module = []             # Active module chosen from user
         self.__module_count = {}              # Numbers of error detected from active module
         self.__contents = ""                  # TODO: delete?
         self.__sentences = []                 # List of Sentence objects
         self.__conv_contents = ""             # TODO: delete?
+        if did:
+            # TODO: remove me, did must be created by database(automatically)
+            self.__did = did
 
+    def upload(self, name, contents, dbconn):
+        # TODO: Discuss Trial limit num
+        
+        # Insert document on doc table with dname
+        # Verify if dname is unique.
+        trial_limit = 2
+        for i in range(1, trial_limit+1):
+            dname = name if i==1 else f"{name.replace('.txt','_{}.txt'.format(i))}"
+            self.__app.logger.info("class Document - upload(): "
+                                + f"Uploading document on doc table trial#{i} with dname:{dname}...")
+            query = f"INSERT INTO doc (dname, contents) VALUES (%s, %s); "
+            data = (dname, contents)
+            try:
+                cursor = dbconn.cursor()
+                cursor.execute(query, data)
+                dbconn.commit()
+                cursor.close()
+                # Set member variable: __dname
+                self.__dname = dname
+
+                # When Query succeed
+                break
+            except dbconn.Error as e:
+                self.__app.logger.error("class Document - upload(): "
+                                    + f"Error uploading document with name {dname}")
+                self.__app.logger.error(f"class Document - upload(): {e}")
+
+        # get did from db and set self.__did
+        if self.__dname != "": 
+            self.__app.logger.info("class Document - upload(): "
+                        + "Fetching did(auto-generated from database) ...")
+            query = f"SELECT did FROM doc WHERE dname = '{self.__dname}'; "
+            try:
+                cursor = dbconn.cursor()
+                cursor.execute(query)
+                query_result = cursor.fetchone()
+                self.__did = query_result[0]
+                cursor.close()
+            except dbconn.Error as e:
+                self.__app.logger.error("class Document - upload(): "
+                                    + "Error fetching did from database.")
+                self.__app.logger.error(f"class Document - upload(): {e}")
+                return "FAIL"
+        else:
+            return "FAIL"
+        return "SUCCESS"
+
+    # TODO: remove me
     def __setDname(self, dbconn):
         self.__app.logger.info("class Document - setDname(): "
                             + "Fetching dname ...")
