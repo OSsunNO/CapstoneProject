@@ -1,0 +1,14 @@
+@startuml
+title document uploading
+ReactApp -> FlaskApp: uploadFile()
+FlaskApp -> Document: create(dname, contents)
+activate Document
+  group loop if file name duplicated
+    Document -> DB: updateDocTable(dname, contents)
+  end
+  Document -> DB: getDid()
+  DB --> Document: return did
+deactivate Document
+Document --> FlaskApp: return "SUCCESS"
+FlaskApp --> ReactApp: return "SUCCESS"
+@enduml
