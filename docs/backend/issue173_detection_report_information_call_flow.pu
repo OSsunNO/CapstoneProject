@@ -3,7 +3,7 @@ title Detection Report
 -> ReactApp: getDetectionReport()
 ReactApp -> FlaskApp: request_detection_report_data(did)
 activate FlaskApp
-  FlaskApp -> Document: create()
+  == fetching information == 
   FlaskApp -> Document: fetchDetReportInfo(dbconn)
   activate Document
     Document -> Document: setDname()
@@ -17,6 +17,14 @@ activate FlaskApp
       deactivate Sentence
     Document -> Document: appendSentences()
     end
+  == getting information == 
+    Document -> Document: initializeInfoDict()
+    group setSentences() - loop for every sentences
+      activate Sentence
+        Document -> Sentence: getOriginalHighlightedContent()
+      deactivate Sentence
+    end
+    Document -> Document: convertDictToJson()
   deactivate Document
   Document --> FlaskApp: return DetReportInfo
 deactivate FlaskApp

@@ -1,0 +1,40 @@
+@startuml
+title Conversion Report 
+-> ReactApp: getConversionReport(option)
+ReactApp -> FlaskApp: request_conversion_report_data(did, option)
+activate FlaskApp
+  == fetching information == 
+  FlaskApp -> Document: fetchConvReportInfo(dbconn, option)
+  activate Document
+    Document -> Document: verifyDetectedInformation()
+    alt detected information hasn't fetched
+      Document -> Document: fetchDetReportInfo(dbconn)
+    else detected information exists
+      group setSentences() - loop for every sentences
+      activate Sentence
+        Document -> Sentence: setConvertOption(option)
+        Document -> Sentence: setConvertedContent()
+        Document -> Sentence: highlightConvertedContent()
+      deactivate Sentence
+      end
+    end 
+  == getting information == 
+    Document -> Document: initializeInfoDict()
+    Document -> Document: calculateOverviewRate()
+    group setSentences() - loop for every sentences
+      activate Sentence
+        Document -> Sentence: getConvertedContent()
+        Document -> Document: updateConvertedContents()
+        Document -> Sentence: getDetectedErrorTypes()
+        Document -> Sentence: getOriginalHighlightedContent()
+        Document -> Sentence: getConvertedHighlightedContent()
+      deactivate Sentence
+    end
+    Document -> Document: convertDictToJson()
+  deactivate Document
+  Document --> FlaskApp: return ConvReportInfo
+deactivate FlaskApp
+FlaskApp --> ReactApp: return conversion report information
+ReactApp -> ReactApp: addTimestamp()
+<-- ReactApp: conversionreport
+@enduml
