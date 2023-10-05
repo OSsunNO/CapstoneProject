@@ -279,7 +279,7 @@ class Sentence:
         csent = self.__original_content
         
         # Highlight only if error has been detected
-        if self.__isClean():
+        if not self.__isClean():
             for m in modules:
                 error_value = self.__error_info[m]
                 tag_st = f"<mark id='{m}'>"
