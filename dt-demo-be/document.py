@@ -276,6 +276,8 @@ class Document:
                 info_dict["details"][f"{s.getSid()}"]["original_highlighted_sentences"] = s.getOriginalHighlightedContent()
                 info_dict["details"][f"{s.getSid()}"]["converted_highlighted_sentences"] = s.getConvertedHighlightedContent()
 
+        info_dict["converted_contents"] = self.__conv_contents
+
         info_json = ""
         try:
             info_json = json.dumps(info_dict, ensure_ascii=False)
