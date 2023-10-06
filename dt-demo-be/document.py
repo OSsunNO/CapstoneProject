@@ -407,7 +407,7 @@ class Sentence:
                         # For duplication column, True means duplication detected
                         if error_value == 1:
                             # Retrun duplicated part with strike(del) tag to visualize elimination
-                            csent = tag_st+"<del>"+self.__original_content+"</del>"+tag_end
+                            csent = "<del>"+tag_st+self.__original_content+tag_end+"</del>"
 
                     # Confirm if error value exists
                     elif error_value is not None:
@@ -422,7 +422,7 @@ class Sentence:
 
                 tag_st = f"<mark id='{','.join(self.getDetectedErrorTypes())}'>"
                 tag_end = "</mark>"
-                csent = tag_st+"<del>"+self.__original_content+"</del>"+tag_end
+                csent = "<del>"+tag_st+self.__original_content+tag_end+"</del>"
         
         self.__converted_highlighted_content = csent
 

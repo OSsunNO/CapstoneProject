@@ -3,10 +3,9 @@ import styled from "styled-components";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../hooks/api/axiosInterceptor";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import setDetReportData from "../../components/templates/report/generateReport";
+import setDetReportData from "../../components/report/generateReport";
 import DetectionReportTemplate from "../../components/templates/detectionReportTemplate";
+import HtmlStringToPdf from "../../components/report/htmlStringToPdf";
 
 const Container = styled.div`
     display: flex;
@@ -58,9 +57,11 @@ const DetectionContainer = () => {
         }
 
         try {
-            await useApi.post("/filter/filter/convreport", {
+            const convReport_data = await useApi.post("/filter/convreport", {
                 option: radioSelected,
             });
+            localStorage.setItem("convReport_data", JSON.stringify(convReport_data.data));
+
             alert("필터링이 완료되었습니다.");
             navigate("/filter/conversion");
         } catch (err) {
@@ -68,54 +69,14 @@ const DetectionContainer = () => {
         }
     };
 
-    const htmlStringToPdf = async (htmlString, pdfRef) => {
-        let iframe = document.createElement("iframe");
-        iframe.style.visibility = "hidden";
-        document.body.appendChild(iframe);
-        let iframedoc = iframe.contentDocument || iframe.contentWindow.document;
-        iframedoc.body.innerHTML = htmlString;
-
-        let canvas = await html2canvas(iframedoc.body, {
-            windowWidth: 800,
-        });
-        let imgData = canvas.toDataURL("image/png");
-
-        const doc = new jsPDF({
-            format: "a4",
-            unit: "mm",
-        });
-
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const pageHeight = doc.internal.pageSize.getHeight();
-
-        const widthRatio = pageWidth / canvas.width;
-        const customHeight = canvas.height * widthRatio;
-
-        doc.addImage(imgData, "png", 0, 0, pageWidth, customHeight);
-
-        let heightLeft = customHeight;
-        let heightAdd = -pageHeight;
-
-        // over 1 page
-        while (heightLeft >= pageHeight) {
-            doc.addPage();
-            doc.addImage(imgData, "png", 0, heightAdd, pageWidth, customHeight);
-            heightLeft -= pageHeight;
-            heightAdd -= pageHeight;
-        }
-
-        let pdfBlob = doc.output("blob");
-        pdfRef.current.src = URL.createObjectURL(pdfBlob);
-    };
-
     useEffect(() => {}, [radioSelected]);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await useApi.get("/filter/detreport");
+                const detReport_data = await useApi.get("/filter/detreport");
                 const { did, dname, active_module, module_count, contents, sentences } =
-                    response.data;
+                    detReport_data.data;
 
                 const reportData = setDetReportData({
                     did,
@@ -125,9 +86,9 @@ const DetectionContainer = () => {
                     contents,
                     sentences,
                 });
-                console.log(reportData);
-                const template = DetectionReportTemplate(reportData); // update html template, return html string
-                htmlStringToPdf(template, pdfRef);
+
+                const template = DetectionReportTemplate(reportData);
+                HtmlStringToPdf(template, pdfRef);
             } catch (error) {
                 console.error("Error fetching data", error);
             }
@@ -157,13 +118,13 @@ const DetectionContainer = () => {
                     <label htmlFor="word">단어 변환</label>
                     <input
                         type="radio"
-                        id="sent"
-                        name="sent"
-                        value="sent"
-                        checked={radioSelected === "sent"}
+                        id="sentence"
+                        name="sentence"
+                        value="sentence"
+                        checked={radioSelected === "sentence"}
                         onChange={onChange}
                     />
-                    <label htmlFor="sent">단어가 포함된 문장 전체 제거</label>
+                    <label htmlFor="sentence">단어가 포함된 문장 전체 제거</label>
                 </RadioGroup>
                 <Button
                     style={{

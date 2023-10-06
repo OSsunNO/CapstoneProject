@@ -97,11 +97,11 @@ const DetectionReportTemplate = ({
 
     const checkbox_checked = (module) => {
         let ischeck = "";
-        console.log(module, selected_modules);
         if (selected_modules.includes(module)) {
             ischeck = 'checked = "checked"';
+
+            // TODO: implement consistent logging info
         }
-        console.log(module, ischeck);
         return ischeck;
     };
 
