@@ -33,8 +33,14 @@ class Document:
                 cursor.execute(query, data)
                 dbconn.commit()
                 cursor.close()
-                # Set member variable: __dname
+                # Set member variable: __dname, __contents
                 self.__dname = dname
+                self.__contents = contents
+
+                if self.__contents == "":
+                    self.__app.logger.error("class Document - upload(): "
+                                        + "Contents is empty.")
+                    return "UPLOAD FAIL"
 
                 # When Query succeed
                 break
@@ -58,10 +64,36 @@ class Document:
                 self.__app.logger.error("class Document - upload(): "
                                     + "Error fetching did from database.")
                 self.__app.logger.error(f"class Document - upload(): {e}")
-                return "FAIL"
+                return "UPLOAD FAIL"
         else:
-            return "FAIL"
+            return "UPLOAD FAIL"
         return "SUCCESS"
+
+    def splitContents(self, dbconn):
+        '''
+        This function splits contents into sentences and stores them into sprocessing table.
+        '''
+        self.__app.logger.info("class Document - splitContent(): "
+                            + "Splitting contents into sentences ...")
+        try:
+            sentences = self.__contents.split("\n")   # TODO: decide delimiters
+
+            sid = 1
+            for sentence in sentences:
+                query = ("INSERT INTO sprocessing (sid, did, osent) "
+                        +f"VALUES ({sid}, {self.__did}, '{sentence}');")
+                cursor = dbconn.cursor()
+                cursor.execute(query)
+                dbconn.commit()
+                cursor.close()
+                
+                sid += 1
+            return "SUCCESS"
+        except Exception as e:
+            self.__app.logger.error("class Document - splitContent(): "
+                                    + "Error splitting contents into sentences.")
+            self.__app.logger.error("class Document - splitContent():",e)
+            return "SPLIT FAIL"
 
     def getDname(self):
         return self.__dname

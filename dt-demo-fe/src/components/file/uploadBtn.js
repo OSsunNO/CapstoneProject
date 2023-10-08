@@ -23,12 +23,22 @@ const UploadBtn = () => {
         fileForm.append("file", selectedFile);
 
         try {
-            await useApi_file.post("/filter/upload", fileForm);
+            const response = await useApi_file.post("/filter/upload", fileForm);
+            const isSuccess = response.data.result;
 
             // CHECK THE UPLOADED FILE
             // console.log("sent data: ", fileForm.get("file"));
 
-            alert("파일 업로드가 완료되었습니다.");
+            if (isSuccess === "SUCCESS") {
+                alert("파일을 정상적으로 업로드하였습니다.");
+                return;
+            } else if (isSuccess === "UPLOAD FAIL : DUPLICATE FILENAME") {
+                alert("파일 업로드에 실패했습니다. 중복된 파일명이 존재합니다.");
+                return;
+            } else {
+                alert("파일 업로드에 실패했습니다. 다시 시도해주세요.");
+                return;
+            }
         } catch (err) {
             console.log(err);
         }
