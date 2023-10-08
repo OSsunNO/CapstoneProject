@@ -26,10 +26,17 @@ def file_upload():
         db_conn = dbconn.connect_to_db()
         test_doc = Document(app)
         uploaded_status = test_doc.upload(file.filename, contents, db_conn)
+
+        if uploaded_status == "SUCCESS":
+            split_status = test_doc.splitContents(db_conn)
+            
         db_conn.close()
         
         doc_list.append(test_doc)
-    return jsonify({'result': uploaded_status})
+
+    if uploaded_status == "SUCCESS" and split_status == "SUCCESS":
+        return jsonify({'result': "SUCCESS"})
+    else: return jsonify({'result': "{%s}" % (uploaded_status)})
 
 # TODO: Design API for saving selected modules
 @app.route("/api/filter/modules", methods=["POST"])
