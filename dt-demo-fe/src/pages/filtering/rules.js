@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button, Checkbox, Modal } from "antd";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import rules from "../../components/rules/ruleOptions";
 import useApi from "../../hooks/api/axiosInterceptor";
+import rules from "../../components/rules/ruleOptions";
 
 const Container = styled.div`
     display: flex;

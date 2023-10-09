@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import { useApi_file } from "../../hooks/api/axiosInterceptor";
 
 const UploadBtn = () => {
@@ -58,6 +59,7 @@ const UploadBtn = () => {
             <Button
                 style={{ backgroundColor: "#212653", color: "white" }}
                 onClick={handleButtonClick}
+                icon={<UploadOutlined />}
             >
                 Upload
             </Button>
