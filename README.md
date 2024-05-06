@@ -1,7 +1,5 @@
-# CapstoneProject
-
-### Web-based unstructured big data cleansing tool
-( 웹 기반 비정형 빅데이터 정제 도구 )
+# Web-based unstructured big data cleansing tool
+웹 기반 비정형 빅데이터 정제 도구
 
 <br/>
 
